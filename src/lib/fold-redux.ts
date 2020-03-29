@@ -1,18 +1,12 @@
 import { AnyAction, Dispatch, Reducer } from "redux";
 import { GlobalState } from "../redux/store";
 
-export interface IReduxAction<State> {
-  type: string;
-  reduce(
-    state: State,
-    props: {
-      dispatch: Dispatch<AnyAction>;
-      getState: () => GlobalState;
-    }
-  ): State | Promise<State>;
-}
+export type ActionReduceProps = {
+  dispatch: Dispatch<AnyAction>;
+  globalState: GlobalState;
+};
 
-export abstract class ReduxAction<State> implements IReduxAction<State> {
+export abstract class ReduxAction<State> {
   public type: string;
   public reducer: Reducer<any, any>;
   public constructor(reducer: Reducer<any, any>) {
@@ -20,7 +14,7 @@ export abstract class ReduxAction<State> implements IReduxAction<State> {
     this.type = this.constructor.name;
   }
   public abstract reduce(
-    state: State,
-    props: { dispatch: Dispatch<AnyAction>; getState: () => GlobalState }
+    reducerState: State,
+    props: ActionReduceProps
   ): State | Promise<State>;
 }

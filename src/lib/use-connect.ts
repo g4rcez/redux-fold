@@ -3,7 +3,6 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { GlobalState } from "../redux/store";
 
-type StateToProps<T> = (_: GlobalState) => T;
 type Selector<T> = (_: GlobalState) => T;
 export type Dispatch<T> = { readonly [P in keyof T]: T[P] };
 
@@ -18,7 +17,7 @@ type Action = { readonly [key: string]: any };
 type Actions = { [key: string]: (...args: any) => Action };
 
 const useRedux = <T, S extends Actions>(
-  state: StateToProps<T>,
+  state: Selector<T>,
   dispatches: Dispatch<S>,
   cmp = shallowEqual
 ): [T, Dispatch<S>] => {
