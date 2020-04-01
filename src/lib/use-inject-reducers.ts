@@ -3,12 +3,12 @@ import { useStore } from "react-redux";
 import { Reducer } from "redux";
 import { AsyncStore } from "../redux/store";
 
-const useInjectReducer = (key: string, reducer: Reducer<any>) => {
+const useInjectReducers = (...reducer: Reducer<any>[]) => {
   const store = useStore() as AsyncStore;
 
   useEffect(() => {
-    store.injectReducer(key, reducer);
-  }, []);
+    store.injectReducers(...reducer);
+  }, [reducer]);
 };
 
-export default useInjectReducer;
+export default useInjectReducers;

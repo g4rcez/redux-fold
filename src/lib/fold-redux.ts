@@ -1,20 +1,25 @@
-import { AnyAction, Dispatch, Reducer } from "redux";
-import { GlobalState } from "../redux/store";
+import { AnyAction, Reducer } from "redux";
+import { ActionReduceProps } from "./fold-types";
 
-export type ActionReduceProps = {
-  dispatch: Dispatch<AnyAction>;
-  globalState: GlobalState;
-};
-
-export abstract class ReduxAction<State> {
+export abstract class ReduxAction {
   public type: string;
-  public reducer: Reducer<any, any>;
-  public constructor(reducer: Reducer<any, any>) {
+  public reducer: Reducer;
+  public constructor(reducer: Reducer) {
     this.reducer = reducer;
     this.type = this.constructor.name;
   }
   public abstract reduce(
-    reducerState: State,
+    reducerState: ReturnType<Reducer<unknown, any>>,
     props: ActionReduceProps
-  ): State | Promise<State>;
+  ): ReturnType<Reducer> | Promise<ReturnType<Reducer>>;
 }
+
+export const foldReducer = <State>(
+  initialState: State
+): Reducer<State, any> => (
+  state: State = initialState,
+  { type, ...actions }: AnyAction
+) => ({
+  ...state,
+  ...actions
+});

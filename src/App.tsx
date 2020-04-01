@@ -2,25 +2,23 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { ActionTest } from "./actions/test";
 import fillState from "./lib/fill-state";
-import useInjectReducer from "./lib/use-inject-reducer";
+import useInjectReducers from "./lib/use-inject-reducers";
 import useReduxState from "./lib/use-redux-state";
-import {
-  MainReducer,
-  mainReducerInitialReducer
-} from "./reducers/main-reducer";
+import { MainReducer } from "./reducers/main-reducer";
+import { GlobalState } from "./redux/store";
+
+const getState = (state: GlobalState) =>
+  fillState<typeof MainReducer>(state, MainReducer);
 
 const App = () => {
-  useInjectReducer("MainReducer", MainReducer);
+  useInjectReducers(MainReducer);
   const dispatch = useDispatch();
-  const state = useReduxState(state => {
-    const MainReducer = fillState(state.MainReducer, mainReducerInitialReducer);
-    return {
-      n: MainReducer.number
-    };
-  });
+  const state = useReduxState(getState);
 
   useEffect(() => {
-    dispatch(new ActionTest(9));
+    setTimeout(() => {
+      dispatch(new ActionTest(9));
+    }, 1000);
   }, [dispatch]);
 
   return <span>{JSON.stringify(state)}</span>;

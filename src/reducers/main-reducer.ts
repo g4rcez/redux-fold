@@ -1,7 +1,10 @@
-export const mainReducerInitialReducer = { number: 0 };
+import { Reducer } from "react";
+import { foldReducer } from "../lib/fold-redux";
 
-export type MainReducerState = typeof mainReducerInitialReducer;
-export const MainReducer = (
-  state = mainReducerInitialReducer,
-  { type, ...rest }: any
-): MainReducerState => (type === MainReducer.name ? { ...state, ...rest } : state);
+const initialState = { number: 0 };
+
+export type MainReducerState = typeof initialState;
+
+export type MainReducerType = Reducer<MainReducerState, any>;
+
+export const MainReducer = foldReducer<MainReducerState>(initialState);

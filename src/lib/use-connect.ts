@@ -14,9 +14,9 @@ const getState = <T>(fn: Selector<T>) =>
 
 type Action = { readonly [key: string]: any };
 
-type Actions = { [key: string]: (...args: any) => Action };
+type Actions<S> = { [key in keyof S]: (...args: any) => Action };
 
-const useRedux = <T, S extends Actions>(
+const useRedux = <T, S extends Actions<S>>(
   state: Selector<T>,
   dispatches: Dispatch<S>,
   cmp = shallowEqual
@@ -25,7 +25,7 @@ const useRedux = <T, S extends Actions>(
   const memoDispatch = useMemo(
     () =>
       Object.entries(dispatches).reduce(
-        (acc, [name, fn]) => ({
+        (acc, [name, fn]: [string, any]) => ({
           ...acc,
           [name]: (...params: any) => dispatch(fn(...params))
         }),

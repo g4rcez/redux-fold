@@ -23,7 +23,21 @@ export type AsyncStore = Store<unknown, AnyAction> & {
   asyncReducers: {
     [key: string]: Reducer<unknown, any>;
   };
-  injectReducer: (key: string, reducer: Reducer<any>) => AsyncStore;
+  injectReducers: (...reducer: Reducer<any>[]) => AsyncStore;
+};
+
+const getUniqueReducers = (reducers: Reducer[]) => {
+  const seen = new Set();
+  return reducers.filter(el => {
+    const key = el.name;
+    const duplicate = key ? seen.has(key) : seen.has(key);
+    if (!!key) {
+      if (!duplicate) {
+        seen.add(key);
+      }
+    }
+    return !duplicate;
+  });
 };
 
 const initializeStore = (initialState = {}) => {
@@ -33,8 +47,10 @@ const initializeStore = (initialState = {}) => {
     applyMiddleware(reduxFold)
   ) as AsyncStore;
   store.asyncReducers = {};
-  store.injectReducer = (key: string, reducer: Reducer<unknown, any>) => {
-    store.asyncReducers[key] = reducer;
+  store.injectReducers = (...reducers: Reducer[]) => {
+    getUniqueReducers(reducers).forEach(
+      reducer => (store.asyncReducers[reducer.name] = reducer)
+    );
     store.replaceReducer(combineAsyncReducers(store.asyncReducers) as any);
     return store;
   };
@@ -49,5 +65,4 @@ type AsyncReducers = Partial<{
 }>;
 export type GlobalState = ReturnType<Reducers<typeof combineAsyncReducers>> &
   AsyncReducers;
-
 export default initializeStore;

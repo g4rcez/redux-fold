@@ -1,19 +1,12 @@
-import { ActionReduceProps, ReduxAction } from "../lib/fold-redux";
+import { ReduxAction } from "../lib/fold-redux";
+import { ActionReduceProps } from "../lib/fold-types";
 import { MainReducer } from "../reducers/main-reducer";
 
-type ActionTestType = { number: number };
-
-export class ActionTest extends ReduxAction<ActionTestType> {
-  private number: number;
-  public constructor(n: number) {
-    super(MainReducer);
-    this.number = n;
-  }
+export class ActionTest extends ReduxAction {
   public reduce(
-    state: ActionTestType,
+    state: ReturnType<typeof MainReducer>,
     props: ActionReduceProps
-  ): ActionTestType {
-    console.log(this.number);
+  ) {
     if (this.number === 9) {
       setTimeout(() => {
         props.dispatch(new ActionTest(7));
@@ -21,8 +14,9 @@ export class ActionTest extends ReduxAction<ActionTestType> {
     }
     return { ...state, number: this.number };
   }
-
-  public static dispatch(n: number) {
-    return new ActionTest(n);
+  private number: number;
+  public constructor(n: number) {
+    super(MainReducer);
+    this.number = n;
   }
 }
